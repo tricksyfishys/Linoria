@@ -55,9 +55,9 @@ local ThemeManager = {} do
 	ThemeManager.Library = nil
 	ThemeManager.BuiltInThemes = {
     ['Default']             = { 12, { FontColor = "ffffff", MainColor = "1a1a1a", AccentColor = "ffffff", BackgroundColor = "0d0d0d", OutlineColor = "333333" } },
-    ['Slate Mist']       = { 9,  { FontColor = "ffffff", MainColor = "1c1f24", AccentColor = "7d9bb8", BackgroundColor = "0f1114", OutlineColor = "33383f" } },
-    ['Slate Mist Mid']   = { 10, { FontColor = "ffffff", MainColor = "39414a", AccentColor = "7d9bb8", BackgroundColor = "282e35", OutlineColor = "525c68" } },
-    ['Warm Taupe']       = { 11, { FontColor = "ffffff", MainColor = "221d18", AccentColor = "b89a7a", BackgroundColor = "120f0c", OutlineColor = "3a3129" } },
+    ['Slate']       = { 9,  { FontColor = "ffffff", MainColor = "1c1f24", AccentColor = "7d9bb8", BackgroundColor = "0f1114", OutlineColor = "33383f" } },
+    ['Slate light']   = { 10, { FontColor = "ffffff", MainColor = "39414a", AccentColor = "7d9bb8", BackgroundColor = "282e35", OutlineColor = "525c68" } },
+    ['Coffee']       = { 11, { FontColor = "ffffff", MainColor = "221d18", AccentColor = "b89a7a", BackgroundColor = "120f0c", OutlineColor = "3a3129" } },
 }
 	function ApplyBackgroundVideo(videoLink)
 		if
