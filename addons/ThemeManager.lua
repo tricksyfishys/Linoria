@@ -189,20 +189,27 @@ local ThemeManager = {} do
     self.Library.AccentColorDark = self.Library:GetDarkerColor(self.Library.AccentColor);
     self.Library:UpdateColorsUsingRegistry()
 
-    -- FIX: force the outer window background to update directly.
-    -- UpdateColorsUsingRegistry only touches instances that got registered,
-    -- and the outer background frame doesn't always get registered if the
-    -- window has no groupboxes yet when the theme is applied.
-    pcall(function()
-        if self.Library.Background then
-            self.Library.Background.BackgroundColor3 = self.Library.BackgroundColor
-        end
-    end)
-    pcall(function()
-        if self.Library.Main then
-            self.Library.Main.BackgroundColor3 = self.Library.BackgroundColor
-        end
-    end)
+    -- FIX: force outer window instances directly instead of relying only on
+    -- the registry, since instances not yet registered (e.g. no groupbox
+    -- created yet) silently get skipped by UpdateColorsUsingRegistry.
+    local function ForceApply()
+        pcall(function()
+            if self.Library.Background then
+                self.Library.Background.BackgroundColor3 = self.Library.BackgroundColor
+            end
+        end)
+        pcall(function()
+            if self.Library.Main then
+                self.Library.Main.BackgroundColor3 = self.Library.MainColor
+            end
+        end)
+        self.Library:UpdateColorsUsingRegistry()
+    end
+
+    ForceApply()
+
+    -- Catch late-registered instances (built a frame after this ran)
+    task.defer(ForceApply)
 end
 
 	--// Get, Load, Save, Delete, Refresh \\--
