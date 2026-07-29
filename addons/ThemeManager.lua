@@ -169,7 +169,23 @@ local ThemeManager = {} do
 
 		self:ThemeUpdate()
 	end
+local DEFAULT_GRAY = Color3.fromRGB(163, 162, 165)
 
+local function PatchUnthemedInstances()
+    local root = self.Library.ScreenGui or self.Library.GUI or self.Library.Holder
+    if not root then return end
+
+    for _, inst in next, root:GetDescendants() do
+        if inst:IsA("GuiObject") and inst.BackgroundTransparency < 1 then
+            local c = inst.BackgroundColor3
+            if math.abs(c.R * 255 - DEFAULT_GRAY.R * 255) < 3
+            and math.abs(c.G * 255 - DEFAULT_GRAY.G * 255) < 3
+            and math.abs(c.B * 255 - DEFAULT_GRAY.B * 255) < 3 then
+                inst.BackgroundColor3 = self.Library.BackgroundColor
+            end
+        end
+    end
+end
 	function ThemeManager:ThemeUpdate()
     -- This allows us to force apply themes without loading the themes tab :)
     if self.Library.InnerVideoBackground ~= nil then
@@ -207,9 +223,13 @@ local ThemeManager = {} do
     end
 
     ForceApply()
-
+PatchUnthemedInstances()
     -- Catch late-registered instances (built a frame after this ran)
-    task.defer(ForceApply)
+    task.defer(function()
+	
+	    ForceApply()
+    PatchUnthemedInstances()
+	end)
 end
 
 	--// Get, Load, Save, Delete, Refresh \\--
