@@ -528,17 +528,6 @@ local SaveManager = {} do
 
         -- self:LoadAutoloadConfig()
         self:SetIgnoreIndexes({ 'SaveManager_ConfigList', 'SaveManager_ConfigName' })
-		MenuGroup:AddLabel("Menu bind"):AddKeyPicker("MenuKeybind", {
-    Default = "RightShift",
-    NoUI = true,
-    Text = "Menu keybind",
-	ChangedCallback = function(Value)
-
-Library.ToggleKeybind = Value
-
-	end
-})
-
     end
 
     SaveManager:BuildFolderTree()
