@@ -1209,11 +1209,25 @@ do
 
         -- Modifiers
         local Modifiers = {
-           
+           ["LAlt"] = Enum.KeyCode.LeftAlt,
+    ["RAlt"] = Enum.KeyCode.RightAlt,
+    ["LCtrl"] = Enum.KeyCode.LeftControl,
+    ["RCtrl"] = Enum.KeyCode.RightControl,
+    ["LShift"] = Enum.KeyCode.LeftShift,
+    ["RShift"] = Enum.KeyCode.RightShift,
+    ["Tab"] = Enum.KeyCode.Tab,
+    ["CapsLock"] = Enum.KeyCode.CapsLock
         }
 
         local ModifiersInput = {
-           
+           [Enum.KeyCode.LeftAlt] = "LAlt",
+    [Enum.KeyCode.RightAlt] = "RAlt",
+    [Enum.KeyCode.LeftControl] = "LCtrl",
+    [Enum.KeyCode.RightControl] = "RCtrl",
+    [Enum.KeyCode.LeftShift] = "LShift",
+    [Enum.KeyCode.RightShift] = "RShift",
+    [Enum.KeyCode.Tab] = "Tab",
+    [Enum.KeyCode.CapsLock] = "CapsLock"
         }
 
         local IsModifierInput = function(Input)
@@ -1790,10 +1804,10 @@ do
                                     if not IsModifierInput(Input) then
                                         break
                                     end
-                                else
-                                    if not table.find(ActiveModifiers, ModifiersInput[Input.KeyCode]) then
-                                        break -- Modifier is meant to be used as a normal key --
-                                    end
+                               else
+    ActiveModifiers = {}
+    break -- treat pure modifier as normal key
+end
                                 end
                             end
                         until false
