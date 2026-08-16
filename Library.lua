@@ -1811,9 +1811,10 @@ do
                                         break
                                     end
                                 else
-                                    if not table.find(ActiveModifiers, ModifiersInput[Input.KeyCode]) then
-                                        break -- Modifier is meant to be used as a normal key --
-                                    end
+                                   else
+    ActiveModifiers = {}
+    break -- treat pure modifier as normal key
+end
                                 end
                             end
                         until false
