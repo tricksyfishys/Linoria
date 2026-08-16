@@ -1208,7 +1208,13 @@ do
         }
 
         -- Modifiers
-      
+        local Modifiers = {
+           
+        }
+
+        local ModifiersInput = {
+           
+        }
 
         local IsModifierInput = function(Input)
             return Input.UserInputType == Enum.UserInputType.Keyboard and ModifiersInput[Input.KeyCode] ~= nil
