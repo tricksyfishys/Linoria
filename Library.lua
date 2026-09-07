@@ -89,7 +89,7 @@ local Buttons = {}
 local Tooltips = {}
 local Dialogues = {}
 
--- https://github.com/deividcomsono/Obsidian/blob/main/Library.lua#L30
+-- Library.lua
 local BaseURL = "https://raw.githubusercontent.com/mstudio45/LinoriaLib/refs/heads/main/"
 local CustomImageManager = {}
 local CustomImageManagerAssets = {
@@ -472,7 +472,7 @@ function Library:SetDPIScale(value: number)
 end
 
 function Library:SafeCallback(Func, ...)
-    -- https://github.com/deividcomsono/Obsidian/blob/main/Library.lua#L1100
+    -- Library.lua
     if not (Func and typeof(Func) == "function") then
         return
     end
@@ -4148,14 +4148,14 @@ do
             Library:UpdateDependencyGroupboxes()
         end
 
-        function Toggle:SetVisible(Visibility)
-            Toggle.Visible = Visibility
-
-            ToggleOuter.Visible = Toggle.Visible
-            if Blank then Blank.Visible = Toggle.Visible end
-
-            Groupbox:Resize()
-        end
+       function Toggle:SetVisible(Visibility)
+    Toggle.Visible = Visibility
+    ToggleContainer.Visible = Toggle.Visible
+    ToggleOuter.Visible = Toggle.Visible
+    ToggleLabel.Visible = Toggle.Visible
+    if Blank then Blank.Visible = Toggle.Visible end
+    Groupbox:Resize()
+end
 
         function Toggle:SetDisabled(Disabled)
             Toggle.Disabled = Disabled
@@ -6595,7 +6595,127 @@ function Library:CreateWindow(...)
         ZIndex = 1;
         Parent = Inner;
     })
+    local SearchOuter = Library:Create("Frame", {
+    AnchorPoint = Vector2.new(1, 0);
+    BackgroundColor3 = Color3.new(0, 0, 0);
+    BorderColor3 = Color3.new(0, 0, 0);
+    Position = UDim2.new(1, -7, 0, 3);
+    Size = UDim2.new(0, 130, 0, 18);
+    ZIndex = 1;
+    Parent = Inner;
+})
 
+    local SearchInner = Library:Create("Frame", {
+    BackgroundColor3 = Library.MainColor;
+    BorderColor3 = Library.OutlineColor;
+    BorderMode = Enum.BorderMode.Inset;
+    Size = UDim2.new(1, 0, 1, 0);
+    ZIndex = 1;
+    Parent = SearchOuter;
+})
+
+Library:AddToRegistry(SearchInner, {
+    BackgroundColor3 = "MainColor";
+    BorderColor3 = "OutlineColor";
+})
+
+Library:Create("UIGradient", {
+    Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.new(1, 1, 1)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(212, 212, 212))
+    });
+    Rotation = 90;
+    Parent = SearchInner;
+})
+
+local SearchTextBox = Library:Create("TextBox", {
+    BackgroundTransparency = 1;
+    Position = UDim2.new(0, 5, 0, 0);
+    Size = UDim2.new(1, -10, 1, 0);
+    Font = Library.Font;
+    PlaceholderColor3 = Color3.fromRGB(190, 190, 190);
+    PlaceholderText = "Search...";
+    Text = "";
+    TextColor3 = Library.FontColor;
+    TextSize = 13;
+    TextStrokeTransparency = 0;
+    TextXAlignment = Enum.TextXAlignment.Left;
+    ClearTextOnFocus = false;
+    ZIndex = 2;
+    Parent = SearchInner;
+})
+
+Library:ApplyTextStroke(SearchTextBox)
+
+Library:AddToRegistry(SearchTextBox, {
+    TextColor3 = "FontColor";
+})
+
+Window.Search = SearchTextBox
+
+local function IsMatch(Text, Query)
+    if not Query or Query == "" then return true end
+    if typeof(Text) ~= "string" or Text == "" then return false end
+    return string.find(string.lower(Text), string.lower(Query), 1, true) ~= nil
+end
+
+function Window:Filter(Query)
+    Query = Trim(tostring(Query or ""))
+    local Empty = Query == ""
+
+    for _, Tab in next, Window.Tabs do
+        local function FilterGroupbox(Groupbox)
+            if not Groupbox or not Groupbox.Elements then return end
+
+            for _, Element in next, Groupbox.Elements do
+                if Element._BaseVisible == nil then
+                    Element._BaseVisible = (Element.Visible ~= false)
+                end
+
+                local Text = Element.Text or Element.OriginalText
+                if not Text and Element.TextLabel and typeof(Element.TextLabel.Text) == "string" then
+                    Text = Element.TextLabel.Text
+                end
+
+                local Visible
+                if Empty then
+                    Visible = Element._BaseVisible
+                else
+                    Visible = Element._BaseVisible and IsMatch(Text, Query)
+                end
+
+                if typeof(Element.SetVisible) == "function" then
+                    Element:SetVisible(Visible)
+                    if Empty then
+                        Element.Visible = Element._BaseVisible
+                    end
+                elseif Element.TextLabel then
+                    Element.TextLabel.Visible = Visible
+                elseif Element.Holder then
+                    Element.Holder.Visible = Visible
+                end
+            end
+
+            if Groupbox.Resize then Groupbox:Resize() end
+        end
+
+        for _, Groupbox in next, Tab.Groupboxes or {} do
+            FilterGroupbox(Groupbox)
+        end
+
+        for _, Tabbox in next, Tab.Tabboxes or {} do
+            for _, SubTab in next, Tabbox.Tabs or {} do
+                FilterGroupbox(SubTab)
+            end
+        end
+
+        if Tab.Resize then Tab:Resize() end
+    end
+end
+
+SearchTextBox:GetPropertyChangedSignal("Text"):Connect(function()
+    Window:Filter(SearchTextBox.Text)
+end)
     local MainSectionOuter = Library:Create("Frame", {
         BackgroundColor3 = Library.BackgroundColor;
         BorderColor3 = Library.OutlineColor;
